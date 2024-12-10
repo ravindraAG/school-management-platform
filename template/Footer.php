@@ -15,7 +15,7 @@
 
 <footer class="d-flex p-5 justify-content-center mt-auto bg-success">
     <div class="text-center text-white">
-    <p>EasySchoolSystems</p>
+    <p>EZ School Systems</p>
     <p>All Rights Reserved ©</p>
     </div>
 </footer>

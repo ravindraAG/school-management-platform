@@ -59,8 +59,8 @@
 								<tbody> 
 									<tr> 
 										<th scope="row">1</th>
-										<td>Marco</td> 
-										<td>Juan</td> 
+										<td>Deniecia</td> 
+										<td>Richard</td> 
 										<td>Baldie</td> 
 									</tr> 
 								</tbody> 

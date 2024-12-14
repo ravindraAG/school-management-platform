@@ -7,7 +7,7 @@
 
             if(array_key_exists($request, $routes)) {
                 $controller = $routes[$request][0];
-                $method = $routes[$request][1];
+                $method = $routes[$request][1]; // LOAD METHOD
                 if (file_exists(BASE_PATH . '/controllers/' . $controller . '.php')) {
                     require BASE_PATH . '/controllers/' . $controller . '.php';
                     if (method_exists($controller, $method)) {

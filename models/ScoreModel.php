@@ -1,94 +1,70 @@
 <?php 
-class ScoreModel {
-    private $conn;
-    protected $table = 'scores';
 
-    public $id;
-    public $score;
-    public $subjectId;
-    public $termId;
-    public $studentId;
+require BASE_PATH . '/core/Model.php';
 
-    public function __construct($db) {
-        $this->conn = $db;
-    }
+class ScoreModel extends Model {
+    protected $table = 'scores'; // Table name matches the database schema
 
-    // Record a new score
-    public function recordScore($subjectId, $score, $termId, $studentId) {
+    public function getAll()
+    {
         try {
-            $query = "INSERT INTO {$this->table} (student_id, subject_id, term_id, score) 
-                      VALUES (:student_id, :subject_id, :term_id, :score)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':student_id', $studentId, PDO::PARAM_INT);
-            $stmt->bindParam(':subject_id', $subjectId, PDO::PARAM_INT);
-            $stmt->bindParam(':term_id', $termId, PDO::PARAM_INT);
-            $stmt->bindParam(':score', $score, PDO::PARAM_STR);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error recording score: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Update an existing score
-    public function updateScore($id, $subjectId, $score, $termId, $studentId) {
-        try {
-            $query = "UPDATE {$this->table} 
-                      SET student_id = :student_id, subject_id = :subject_id, 
-                          term_id = :term_id, score = :score 
-                      WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->bindParam(':student_id', $studentId, PDO::PARAM_INT);
-            $stmt->bindParam(':subject_id', $subjectId, PDO::PARAM_INT);
-            $stmt->bindParam(':term_id', $termId, PDO::PARAM_INT);
-            $stmt->bindParam(':score', $score, PDO::PARAM_STR);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error updating score: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Delete a score
-    public function deleteScore($id) {
-        try {
-            $query = "DELETE FROM {$this->table} WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error deleting score: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Get all scores for a specific student
-    public function getScoreByStudent($studentId) {
-        try {
-            $query = "SELECT * FROM {$this->table} WHERE student_id = :student_id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':student_id', $studentId, PDO::PARAM_INT);
-            $stmt->execute();
+            $sql = "SELECT * FROM {$this->table} ORDER BY id ASC";
+            $stmt = $this->connectDB()->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching scores for student: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log($e->getMessage());
             return [];
         }
     }
 
-    // OPTIONAL: Get scores for a specific term (if needed)
-    public function getScoresByTerm($termId) {
+    public function getGradeById($id)
+    {
         try {
-            $query = "SELECT * FROM {$this->table} WHERE term_id = :term_id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':term_id', $termId, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching scores by term: " . $e->getMessage());
+            $sql = "SELECT * FROM {$this->table} WHERE id = ?";
+            $stmt = $this->connectDB()->prepare($sql);
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
             return [];
+        }
+    }
+
+    public function insert($data = [])
+    {
+        try {
+            $sql = "INSERT INTO {$this->table} (student_id, subject_id, term_id, score) VALUES (?, ?, ?, ?)";
+            $stmt = $this->connectDB()->prepare($sql);
+            return $stmt->execute([$data['student_id'], $data['subject_id'], $data['term_id'], $data['score']]);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+
+    public function update($data)
+    {
+        try {
+            $sql = "UPDATE {$this->table} SET student_id=?, subject_id=?, term_id=?, score=? WHERE id = ?";
+            $stmt = $this->connectDB()->prepare($sql);
+            return $stmt->execute([
+                $data['student_id'], $data['subject_id'], $data['term_id'], $data['score'], $data['id']
+            ]);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $sql = "DELETE FROM {$this->table} WHERE id = ?";
+            $stmt = $this->connectDB()->prepare($sql);
+            return $stmt->execute([$id]);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return false;
         }
     }
 }
-?>

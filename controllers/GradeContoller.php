@@ -1,20 +1,20 @@
 <?php
     require BASE_PATH . '/core/Controller.php';
     require BASE_PATH . '/models/GradeModel.php';
-    class SchoolGradeController extends Controller {
+    class GradeController extends Controller {
         private $gradeModel;
 
         public function __construct(){
-            $this->gradeModel = new SchoolGradeModel();
+            $this->gradeModel = new GradesModel();
         }
 
         public function index() {
-            $classes = $this->GradeModel->getAll();
+            $grades = $this->gradeModel->getAll();
             $this->loadView('grades.php', ['grades'=> $grades]);
         }
 
         public function load() {
-            $classes = $this->gradeModel->getAll();
+            $grades = $this->gradeModel->getAll();
             $this->loadView('grades_grid.php', ['grades'=> $grades]);
         }
 

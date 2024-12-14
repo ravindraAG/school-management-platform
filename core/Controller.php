@@ -4,7 +4,7 @@
 
         }
 
-        public function loadView($name = '', $arg = array()) {
+        public function loadView($name = '', $arg = []) {
             $path = BASE_PATH . "/views/{$name}";
             $data = [];
 
@@ -13,7 +13,7 @@
             }
 
             ob_start();
-            include($path);
+            include $path;
             $content = ob_get_contents();
             ob_end_clean();
             echo $content;

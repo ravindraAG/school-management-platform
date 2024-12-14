@@ -1,123 +1,70 @@
-<?php
-class SchoolYearAndTermModel {
-    private $conn;
-    protected $schoolYearTable = 'school_year';
-    protected $termTable = 'terms';
+<?php 
 
-    public function __construct($db) {
-        $this->conn = $db;
-    }
+require BASE_PATH . '/core/Model.php';
 
-    // School Year Functions
+class SchoolYearModel extends Model {
+    protected $table = 'school_year'; // Table name matches the database schema
 
-    // Add a new school year
-    public function createSchoolYear($data) {
+    public function getAll()
+    {
         try {
-            $query = "INSERT INTO {$this->schoolYearTable} (year) VALUES (:year)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':year', $data['year'], PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error creating school year: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Get all school years
-    public function getAllSchoolYears() {
-        try {
-            $query = "SELECT * FROM {$this->schoolYearTable} ORDER BY year ASC";
-            $stmt = $this->conn->query($query);
+            $sql = "SELECT * FROM {$this->table} ORDER BY id ASC";
+            $stmt = $this->connectDB()->query($sql);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching school years: " . $e->getMessage());
+        } catch (Exception $e) {
+            error_log($e->getMessage());
             return [];
         }
     }
 
-    // Update an existing school year
-    public function updateSchoolYear($data) {
+    public function getGradeById($id)
+    {
         try {
-            $query = "UPDATE {$this->schoolYearTable} SET year = :year WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':year', $data['year'], PDO::PARAM_INT);
-            $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error updating school year: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Delete a school year
-    public function deleteSchoolYear($id) {
-        try {
-            $query = "DELETE FROM {$this->schoolYearTable} WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error deleting school year: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Term Functions
-
-    // Add a new term
-    public function createTerm($data) {
-        try {
-            $query = "INSERT INTO {$this->termTable} (name, school_year_id) VALUES (:name, :school_year_id)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
-            $stmt->bindParam(':school_year_id', $data['school_year_id'], PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error creating term: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Get terms by school year ID
-    public function getTermsBySchoolYear($yearId) {
-        try {
-            $query = "SELECT * FROM {$this->termTable} WHERE school_year_id = :school_year_id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':school_year_id', $yearId, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching terms: " . $e->getMessage());
+            $sql = "SELECT * FROM {$this->table} WHERE id = ?";
+            $stmt = $this->connectDB()->prepare($sql);
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
             return [];
         }
     }
 
-    // Update an existing term
-    public function updateTerm($data) {
+    public function insert($data = [])
+    {
         try {
-            $query = "UPDATE {$this->termTable} SET name = :name, school_year_id = :school_year_id WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
-            $stmt->bindParam(':school_year_id', $data['school_year_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error updating term: " . $e->getMessage());
+            $sql = "INSERT INTO {$this->table} (year) VALUES (?)";
+            $stmt = $this->connectDB()->prepare($sql);
+            return $stmt->execute([$data['year']]);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
             return false;
         }
     }
 
-    // Delete a term
-    public function deleteTerm($id) {
+    public function update($data)
+    {
         try {
-            $query = "DELETE FROM {$this->termTable} WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error deleting term: " . $e->getMessage());
+            $sql = "UPDATE {$this->table} SET name = ? WHERE id = ?";
+            $stmt = $this->connectDB()->prepare($sql);
+            return $stmt->execute([
+                $data['year'], $data['id']
+            ]);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
+            return false;
+        }
+    }
+
+    public function delete($id)
+    {
+        try {
+            $sql = "DELETE FROM {$this->table} WHERE id = ?";
+            $stmt = $this->connectDB()->prepare($sql);
+            return $stmt->execute([$id]);
+        } catch (Exception $e) {
+            error_log($e->getMessage());
             return false;
         }
     }
 }
-?>

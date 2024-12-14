@@ -2,8 +2,7 @@
 
 require BASE_PATH . '/core/Model.php';
 
-class GradesModel extends Model
-{
+class GradesModel extends Model {
     protected $table = 'grades'; // Table name matches the database schema
 
     public function getAll()
@@ -49,7 +48,7 @@ class GradesModel extends Model
             $sql = "UPDATE {$this->table} SET name = ? WHERE id = ?";
             $stmt = $this->connectDB()->prepare($sql);
             return $stmt->execute([
-                $data['name'], $data['id']
+                $data['grade'], $data['id']
             ]);
         } catch (Exception $e) {
             error_log($e->getMessage());

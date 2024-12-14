@@ -1,11 +1,11 @@
 <?php
     require BASE_PATH . '/core/Controller.php';
     require BASE_PATH . '/models/ScoreModel.php';
-    class SchoolScoreController extends Controller {
+    class ScoreController extends Controller {
         private $scoreModel;
 
         public function __construct(){
-            $this->scoreModel = new SchoolScoreModel();
+            $this->scoreModel = new ScoreModel();
         }
 
         public function index() {

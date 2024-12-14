@@ -2,7 +2,10 @@
 <html>
 <head>
 	<title>Dashboard </title>
+	<?php include "views/template/Header.php"; ?>
+	<?php include "views/template/Footer.php"; ?>
 	<?php include "views/template/Navbar.php"; ?>
+	<?php include "views/template/SideBar.php"; ?>
 </head>
 <body>
 	<div class="page-container">

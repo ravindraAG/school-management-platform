@@ -1,8 +1,13 @@
 <?php
-    include '../config/database.php'
+    include '../config/database.php';
 //tables can be role table (rolename and role id )and user table (name,email,password,role id)
     class User {
         private $conn;
+
+        public $id;
+        public $name;
+        public $email;
+        public $role;
 
         public function __construct($db) {
             $this->conn = $db;
@@ -23,7 +28,7 @@
             }
         }
 
-        public function deletUser($userId) {
+        public function deleteUser($userId) {
             try {
                 $query = "DELETE FROM users WHERE id = :id";
                 $stmt = $this->conn->prepare($query);
@@ -35,12 +40,12 @@
                 } else {
                     echo "No user found with the given ID.";
                 }
-            } catch (PDOExeption $e) {
+            } catch (PDOException $e) {
                 echo " Error deleting user: " . $e->getMessage();
             }
         }
 
-        public function getUser($eail, $password) {
+        public function getUser($email, $password) {
             try {
                 //fetch user by email
                 $query = "SELECT * FROM users WHERE email = :email";
@@ -52,7 +57,7 @@
                 if ($stmt->rowCount()>0) {
                     $user = $stmt->fetch(PDO::FETCH_ASSOC);
                     
-                    if (pasword_verify($password, user['password'])) {
+                    if (password_verify($password, $user['password'])) {
                         return $user;
                     } else {
                         return false;

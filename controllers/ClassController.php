@@ -1,7 +1,6 @@
 <?php
     require BASE_PATH . '/core/Controller.php';
     require BASE_PATH . '/models/ClassModel.php';
-    require BASE_PATH . '/models/GradeModel.php';
     class SchoolClassController extends Controller {
         private $classModel;
 

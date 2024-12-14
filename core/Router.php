@@ -1,4 +1,5 @@
 <?php
+
     class Router {
         public static function route() {
             require BASE_PATH . '/config/routes.php';

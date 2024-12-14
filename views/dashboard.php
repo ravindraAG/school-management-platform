@@ -11,7 +11,7 @@
 			<div class="outter-wp">
 				<div class="sub-heard-part">
 					<ol class="breadcrumb m-b-0">
-						<li><h2 style="margin-top:0px;"><a>Dashboard - Teacher</a></h2></li>
+						<li><h2 style="margin-top:0px;"><a>Teacher's Hub</a></h2></li>
 					</ol>
 				</div>
 				<div class="graph-visual tables-main">

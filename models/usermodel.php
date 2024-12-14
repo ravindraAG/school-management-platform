@@ -1,73 +1,75 @@
-<?php
-include '../config/database.php';
+<?php 
 
-class User {
-    private $conn;
+    require BASE_PATH . '/core/Model.php';
+    class SchoolUserModel extends Model {
 
-    public $id;
-    public $name;
-    public $email;
-    public $role;
-
-    public function __construct($db) {
-        $this->conn = $db;
-    }
-
-    // Create a new user
-    public function createUser($name, $email, $password, $role_id) {
-        try {
-            $hashedPassword = password_hash($password, PASSWORD_BCRYPT); // Hash the password
-            $query = "INSERT INTO users (name, email, password, role_id) VALUES (:name, :email, :password, :role_id)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':name', $name);
-            $stmt->bindParam(':email', $email);
-            $stmt->bindParam(':password', $hashedPassword);
-            $stmt->bindParam(':role_id', $role_id);
-
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error creating user: " . $e->getMessage());
-            return false;
+        function __construct($table = 'classes') {
+            $this->table = $table;
         }
-    }
 
-    // Delete a user by ID
-    public function deleteUser($userId) {
-        try {
-            $query = "DELETE FROM users WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $userId, PDO::PARAM_INT);
-            $stmt->execute();
+        public function getAll() {
+            $conn = $this->connectDB();
+            $result = null;
 
-            return $stmt->rowCount() > 0; // Return true if a row was deleted
-        } catch (PDOException $e) {
-            error_log("Error deleting user: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Authenticate a user by email and password
-    public function getUser($email, $password) {
-        try {
-            $query = "SELECT * FROM users WHERE email = :email";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':email', $email);
-            $stmt->execute();
-
-            if ($stmt->rowCount() > 0) {
-                $user = $stmt->fetch(PDO::FETCH_ASSOC);
-                if (password_verify($password, $user['password'])) {
-                    return $user;
-                } else {
-                    return false; // Invalid password
+            if ($conn) {
+                $sql = "SELECT * FROM {$this->table} ORDER BY id ASC";
+                $resource = $conn->query($sql);
+                if ($conn) {
+                    $result = $resource->fetchAll(PDO::FETCH_ASSOC);
                 }
-            } else {
-                return false; // User not found
             }
-        } catch (PDOException $e) {
-            error_log("Error fetching user: " . $e->getMessage());
-            return false;
+
+            return $result;
+        }
+
+        public function getUserById($id) {
+            $conn = $this->connectDB();
+            $result = [];
+
+            if ($conn) {
+                $sql = "SELECT * FROM {$this->table} WHERE id = {$id}";
+                $resource = $conn->query($sql);
+                $result = $resource->fetchAll(PDO::FETCH_ASSOC);    
+            }
+
+            return $result ? $result[0] : [];
+        }
+
+        public function insert($data = []) {
+            $conn = $this->connectDB();
+            $result = false;
+
+            if ($conn) {
+                $sql = "INSERT INTO {$this->table} (name, email, password, role_id) VALUES (?, ?, ?, ?)";
+                $result = $conn->prepare($sql)->execute([
+                    $data['name'], $data['email'], $data['password'], $data['role_id']
+                ]);
+            }
+            return $result;
+        }
+
+        public function update($data) {
+            $conn = $this->connectDB();
+            $result = false;
+
+            if ($conn) {
+                $sql = "UPDATE {$this->table} SET name=?, email=?, password=? role_id=? WHERE id=?";
+                $result = $conn->prepare($sql)->execute([
+                    $data['name'], $data['email'], $data['password'] $data['role_id'], $data['id']
+                ]);
+            }
+            return $result;
+        }
+        
+        public function delete($data) {
+            $conn = $this->connectDB();
+            $result = false;
+            if ($conn) {
+                $sql = "DELETE FROM {$this->table} WHERE id=?";
+                $result = $conn->prepare($sql)->execute([
+                    $data["id"]
+                ]);
+            }
+            return $result;
         }
     }
-}
-?>

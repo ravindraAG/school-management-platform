@@ -1,94 +1,75 @@
-<?php
+<?php 
 
-require BASE_PATH . '/core/Model.php';
+    require BASE_PATH . '/core/Model.php';
+    class SchoolGradeModel extends Model {
 
-class SubjectModel {
-    private $conn;
-    protected $table = 'subjects';
+        function __construct($table = 'grades') {
+            $this->table = $table;
+        }
 
-    public $id;
-    public $name;
-    public $gradeId;
+        public function getAll() {
+            $conn = $this->connectDB();
+            $result = null;
 
-    public function __construct($db) {
-        $this->conn = $db;
-    }
+            if ($conn) {
+                $sql = "SELECT * FROM {$this->table} ORDER BY id ASC";
+                $resource = $conn->query($sql);
+                if ($conn) {
+                    $result = $resource->fetchAll(PDO::FETCH_ASSOC);
+                }
+            }
 
-    // Add a new subject
-    public function createSubject($data) {
-        try {
-            $query = "INSERT INTO {$this->table} (name, grade_id) 
-                      VALUES (:name, :grade_id)";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
-            $stmt->bindParam(':grade_id', $data['grade_id'], PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error creating subject: " . $e->getMessage());
-            return false;
+            return $result;
+        }
+
+        public function getGradeById($id) {
+            $conn = $this->connectDB();
+            $result = [];
+
+            if ($conn) {
+                $sql = "SELECT * FROM {$this->table} WHERE id = {$id}";
+                $resource = $conn->query($sql);
+                $result = $resource->fetchAll(PDO::FETCH_ASSOC);    
+            }
+
+            return $result ? $result[0] : [];
+        }
+
+        public function insert($data = []) {
+            $conn = $this->connectDB();
+            $result = false;
+
+            if ($conn) {
+                $sql = "INSERT INTO {$this->table} (name, grade_id) VALUES (?, ?)";
+                $result = $conn->prepare($sql)->execute([
+                    $data['name'], $data['grade_id']
+                ]);
+            }
+            return $result;
+        }
+
+        public function update($data) {
+            $conn = $this->connectDB();
+            $result = false;
+
+            if ($conn) {
+                $sql = "UPDATE {$this->table} SET name=?, grade_id=? WHERE id=?";
+                $result = $conn->prepare($sql)->execute([
+                    $data['name'], $data['grade_id'], $data['id']
+                ]);
+            }
+            return $result;
+        }
+        
+        public function delete($data) {
+            $conn = $this->connectDB();
+            $result = false;
+            if ($conn) {
+                $sql = "DELETE FROM {$this->table} WHERE id=?";
+                $result = $conn->prepare($sql)->execute([
+                    $data["id"]
+                ]);
+            }
+            return $result;
         }
     }
-
-    // Get all subjects
-    public function getAllSubjects() {
-        try {
-            $query = "SELECT s.*, g.name as grade_name 
-                      FROM {$this->table} s
-                      JOIN grades g ON s.grade_id = g.id
-                      ORDER BY s.name ASC";
-            $stmt = $this->conn->query($query);
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching subjects: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    // Get a subject by ID
-    public function getSubjectById($id) {
-        try {
-            $query = "SELECT s.*, g.name as grade_name 
-                      FROM {$this->table} s
-                      JOIN grades g ON s.grade_id = g.id
-                      WHERE s.id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            $stmt->execute();
-            return $stmt->fetch(PDO::FETCH_ASSOC);
-        } catch (PDOException $e) {
-            error_log("Error fetching subject: " . $e->getMessage());
-            return [];
-        }
-    }
-
-    // Update an existing subject
-    public function updateSubject($data) {
-        try {
-            $query = "UPDATE {$this->table} 
-                      SET name = :name, grade_id = :grade_id 
-                      WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':name', $data['name'], PDO::PARAM_STR);
-            $stmt->bindParam(':grade_id', $data['grade_id'], PDO::PARAM_INT);
-            $stmt->bindParam(':id', $data['id'], PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error updating subject: " . $e->getMessage());
-            return false;
-        }
-    }
-
-    // Delete a subject
-    public function deleteSubject($id) {
-        try {
-            $query = "DELETE FROM {$this->table} WHERE id = :id";
-            $stmt = $this->conn->prepare($query);
-            $stmt->bindParam(':id', $id, PDO::PARAM_INT);
-            return $stmt->execute();
-        } catch (PDOException $e) {
-            error_log("Error deleting subject: " . $e->getMessage());
-            return false;
-        }
-    }
-}
-?>

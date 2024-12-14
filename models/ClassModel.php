@@ -3,7 +3,7 @@
     require BASE_PATH . '/core/Model.php';
     class SchoolClassModel extends Model {
 
-        function __construct($table = 'class') {
+        function __construct($table = 'classes') {
             $this->table = $table;
         }
 

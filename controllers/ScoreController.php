@@ -34,10 +34,11 @@
             $data = [
                 'score' => htmlspecialchars($_POST['score']),
                 'student_id' => htmlspecialchars($_POST['student_id']),
-                'subject_id' => htmlspecialchars($_POST['subject_id'])
+                'subject_id' => htmlspecialchars($_POST['subject_id']),
+                'term_id' => htmlspecialchars($_POST['term_id'])
             ];
 
-            if(!empty($data['score']) && !empty($data['student_id']) && !empty($data['subject_id'])) {
+            if(!empty($data['score']) && !empty($data['student_id']) && !empty($data['subject_id']) && !empty($data['term_id'])) {
                 $response['success'] = $this->scoreModel->insert($data);
             }
 
@@ -49,10 +50,11 @@
             $data = [
                 'student_id' => htmlspecialchars($_POST['student_id']),
                 'score' => htmlspecialchars($_POST['score']),
-                'subject_id' => htmlspecialchars($_POST['subject_id'])
+                'subject_id' => htmlspecialchars($_POST['subject_id']),
+                'term_id' => htmlspecialchars($_POST['term_id'])
             ];
 
-            if(!empty($data['student_id']) && !empty($data['score']) && !empty($data['subject_id'])) {
+            if(!empty($data['student_id']) && !empty($data['score']) && !empty($data['subject_id']) && !empty($data['term_id'])) {
                 $response['success'] = $this->scoreModel->update($data);
             }
 

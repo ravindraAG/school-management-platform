@@ -1,4 +1,7 @@
 <?php
+
+require BASE_PATH . '/core/Model.php';
+
 class SchoolYearAndTermModel {
     private $conn;
     protected $schoolYearTable = 'school_year';

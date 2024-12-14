@@ -1,4 +1,7 @@
 <?php
+
+require BASE_PATH . '/core/Model.php';
+
 class StudentModel {
     private $conn;
     protected $table = 'students';
